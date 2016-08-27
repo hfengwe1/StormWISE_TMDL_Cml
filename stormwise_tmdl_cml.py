@@ -8,18 +8,13 @@ provide command line input and output for stormwise_tmdl
 """
 import yaml
 from copy import deepcopy
-from stormwise_tmdl import stormwise
-from stormwise_tmdl import evaluate_solution
-from stormwise_tmdl_upper_bounds import upper_bounds
-from stormwise_tmdl_benefit_slopes import benefit_slopes
+from StormWISE_TMDL_Engine.stormwise_tmdl import stormwise
+from StormWISE_TMDL_Engine.stormwise_tmdl import evaluate_solution
+from StormWISE_TMDL_Engine.stormwise_tmdl_upper_bounds import upper_bounds
+from StormWISE_TMDL_Engine.stormwise_tmdl_benefit_slopes import benefit_slopes
 
-benefitUnits = {'1_volume': 'Million Gallons', '2_sediment': 'Tons',
-            '3_nitrogen': 'Pounds', '4_phosphorous': 'Pounds'}   
-benefitConvertUnits =  {'1_volume': 264.172e-6,   # million gallons per cubic meter    
-                        '2_sediment':  0.0011,    # english ton per kg
-                        '3_nitrogen':  2.2,          # pound per kg
-                        '4_phosphorous': 2.2    # pound per kg
-                        } 
+amplPath = "/Applications/amplide.macosx64/ampl"
+
 
 def multiply_dict_by_constant(dct,constant):
     for key in sorted(dct):
@@ -56,8 +51,7 @@ def format_and_convert_benefit_dict(dct,formatStr,benefitConvertUnits,benefitUni
         displayDict[key] = dct[t]
     return(displayDict)
         
-def print_output(solutionDict):  
-                            
+def print_output(solutionDict,benefitUnits,benefitConvertUnits):                              
     benTotsByBenefit = solutionDict['benTotsByBenefit']
     displayDict = format_and_convert_benefit_dict(benTotsByBenefit,"%0.2f",benefitConvertUnits,benefitUnits)
     print "Benefits:"
@@ -223,6 +217,12 @@ def main():
     print "   change the total investments required and the distribution of benefits by zones, land uses"
     print "   and GSI technologies"
 
+    # read in the desired benefit unit conversions from convert_benefits.yaml
+    with open('convert_benefits.yaml', 'r') as fin:
+        convertBenefits = yaml.load(fin)
+    benefitUnits = convertBenefits['benefitUnits']
+    benefitConvertUnits = convertBenefits['benefitConvertUnits']
+
     prompt = "\nEnter the file name containing your\n  StormWISE input data in YAML format\n  (or type Q to quit) :  "
     while True:
         inYamlFile = raw_input(prompt)
@@ -241,7 +241,7 @@ def main():
     upperBounds = upper_bounds(inYamlDoc)
     upperBoundSolutionDict = evaluate_solution(upperBounds,s,inYamlDoc)
     print "\n\n\nUPPER LIMITS ON BENEFITS:\n"
-    print_output(upperBoundSolutionDict)
+    print_output(upperBoundSolutionDict,benefitUnits,benefitConvertUnits)
 
 # Load the benefitDict using console input:
     while True:
@@ -258,9 +258,9 @@ def main():
                 tDict[t] = float(inString)/benefitConvertUnits[t]  # convert to fundamental units
         benefitDict['benefitLowerBounds'] = tDict
         print "\n\nRUNNING STORMWISE USING AMPL WITH MINOS SOLVER:\n"
-        decisions = stormwise(inYamlDoc,benefitDict)
+        decisions = stormwise(amplPath,inYamlDoc,benefitDict)
         print "\nDISPLAYING THE StormWISE OPTIMAL SOLUTION:\n"
         solutionDict = evaluate_solution(decisions,s,inYamlDoc)
-        print_output(solutionDict)
+        print_output(solutionDict,benefitUnits,benefitConvertUnits)
 
 main()
