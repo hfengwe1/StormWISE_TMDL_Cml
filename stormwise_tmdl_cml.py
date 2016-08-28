@@ -7,49 +7,16 @@ Created on Sun Aug  7 16:33:12 2016
 provide command line input and output for stormwise_tmdl
 """
 import yaml
+import os
 from copy import deepcopy
 from StormWISE_TMDL_Engine.stormwise_tmdl import stormwise
 from StormWISE_TMDL_Engine.stormwise_tmdl import evaluate_solution
-from StormWISE_TMDL_Engine.stormwise_tmdl_upper_bounds import upper_bounds
-from StormWISE_TMDL_Engine.stormwise_tmdl_benefit_slopes import benefit_slopes
+from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import benefit_slopes
+from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import upper_bounds
+from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import convert_benefit_units
+from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import format_and_convert_benefit_dict
 
 amplPath = "/Applications/amplide.macosx64/ampl"
-
-
-def multiply_dict_by_constant(dct,constant):
-    for key in sorted(dct):
-        if type(dct[key]) is dict:
-            multiply_dict_by_constant(dct[key],constant)
-        else:
-            dct[key] *= constant
-def convert_benefit_units(benDict,benefitConvertUnits):
-    dct = deepcopy(benDict)
-    for t in sorted(dct):   # the first level is the benefit type
-        dct[t] *= benefitConvertUnits[t]
-    return dct
-def format_dict_as_strings(dct,formatStr):
-    for key in sorted(dct):
-        if type(dct[key]) is dict:
-            format_dict_as_strings(dct[key],formatStr)
-        else:
-            dct[key] = formatStr % dct[key]
-def format_and_convert_benefit_dict(dct,formatStr,benefitConvertUnits,benefitUnits):
-    oneDimDict = False
-    for t in sorted(dct):
-        if type(dct[t]) is dict:
-            multiply_dict_by_constant(dct[t],benefitConvertUnits[t])
-            #formatWithUnits = formatStr + benefitUnits[t]
-            format_dict_as_strings(dct[t],formatStr)
-        else:
-            oneDimDict = True
-            dct[t] *= benefitConvertUnits[t]
-    if oneDimDict:
-        format_dict_as_strings(dct,formatStr)
-    displayDict = {}
-    for t in sorted(dct):
-        key = t+' ('+benefitUnits[t]+')'
-        displayDict[key] = dct[t]
-    return(displayDict)
         
 def print_output(solutionDict,benefitUnits,benefitConvertUnits):                              
     benTotsByBenefit = solutionDict['benTotsByBenefit']
@@ -216,7 +183,6 @@ def main():
     print "   by entering ALTERNATIVE BENEFIT LEVELS to learn how different runoff load reductions"
     print "   change the total investments required and the distribution of benefits by zones, land uses"
     print "   and GSI technologies"
-
     # read in the desired benefit unit conversions from convert_benefits.yaml
     with open('convert_benefits.yaml', 'r') as fin:
         convertBenefits = yaml.load(fin)
@@ -243,6 +209,7 @@ def main():
     print "\n\n\nUPPER LIMITS ON BENEFITS:\n"
     print_output(upperBoundSolutionDict,benefitUnits,benefitConvertUnits)
 
+    os.chdir("StormWISE_TMDL_Engine")  # change directory to the engine
 # Load the benefitDict using console input:
     while True:
         benefitDict = {}
