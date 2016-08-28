@@ -15,9 +15,11 @@ from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import benefit_slo
 from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import upper_bounds
 from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import convert_benefit_units
 from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import format_and_convert_benefit_dict
+from Arts_Python_Tools.tools import multiply_dict_by_constant
+from Arts_Python_Tools.tools import format_dict_as_strings
 
 amplPath = "/Applications/amplide.macosx64/ampl"
-# testing 123        
+       
 def print_output(solutionDict,benefitUnits,benefitConvertUnits):                              
     benTotsByBenefit = solutionDict['benTotsByBenefit']
     displayDict = format_and_convert_benefit_dict(benTotsByBenefit,"%0.2f",benefitConvertUnits,benefitUnits)
