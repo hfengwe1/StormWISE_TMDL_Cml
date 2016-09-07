@@ -18,7 +18,7 @@ from StormWISE_TMDL_Engine.stormwise_tmdl_benefits_and_bounds import format_and_
 from Arts_Python_Tools.tools import multiply_dict_by_constant
 from Arts_Python_Tools.tools import format_dict_as_strings
 
-amplPath = "/Applications/amplide.macosx64/ampl"
+amplPath = "/Applications/amplide.macosx64/ampl"  # note: you must also set the solver path in stormwise_tmdl.run
        
 def print_output(solutionDict,benefitUnits,benefitConvertUnits):                              
     benTotsByBenefit = solutionDict['benTotsByBenefit']
@@ -211,7 +211,7 @@ def main():
     print "\n\n\nUPPER LIMITS ON BENEFITS:\n"
     print_output(upperBoundSolutionDict,benefitUnits,benefitConvertUnits)
 
-    os.chdir("StormWISE_TMDL_Engine")  # change directory to the engine
+    #os.chdir("StormWISE_TMDL_Engine")  # change directory to the engine
 # Load the benefitDict using console input:
     while True:
         benefitDict = {}
