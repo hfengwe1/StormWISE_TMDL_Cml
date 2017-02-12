@@ -1,0 +1,19 @@
+benefitUnits:
+    1_volume: 'Million Gallons'
+    2_tss: 'Tons'
+    3_aesthetics: '1'
+    4_amenity: '1'
+    5_green_canopy: '%'
+    6_job: 'job/yr'
+    7_m_cost: 'M$/yr'
+    8_fee_saving: M$/yr
+
+benefitConvertUnits:
+    1_volume:  1  
+    2_tss:     1  
+    3_aesthetics: 1
+    4_amenity: 1
+    5_green_canopy: 0.216
+    6_job: 1
+    7_m_cost: 1
+    8_fee_saving: 1
