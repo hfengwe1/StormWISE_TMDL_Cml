@@ -1,7 +1,7 @@
 reset;
-model stormwise_grnacr.mod;
-data stormwise_grnacr.dat;
-data stormwise_grnacr_benefits.dat;
+model stormwise_com.mod;
+data stormwise_com.dat;
+data stormwise_com_benefits.dat;
 option solver "/Applications/amplide.macosx64/minos";
 solve;
 
